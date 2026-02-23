@@ -258,11 +258,11 @@ class Sampler(object):
         if betas is not None:
             self._betas = betas
 
-        self.nswap = np.zeros(self.ntemps, dtype=np.float)
-        self.nswap_accepted = np.zeros(self.ntemps, dtype=np.float)
+        self.nswap = np.zeros(self.ntemps, dtype=float)
+        self.nswap_accepted = np.zeros(self.ntemps, dtype=float)
 
-        self.nprop = np.zeros((self.ntemps, self.nwalkers), dtype=np.float)
-        self.nprop_accepted = np.zeros((self.ntemps, self.nwalkers), dtype=np.float)
+        self.nprop = np.zeros((self.ntemps, self.nwalkers), dtype=float)
+        self.nprop_accepted = np.zeros((self.ntemps, self.nwalkers), dtype=float)
 
         if random is not None:
             self._random = random
@@ -372,7 +372,7 @@ class Sampler(object):
 
                 qs = np.zeros((self.ntemps, self.nwalkers//2, self.dim))
                 for k in range(self.ntemps):
-                    js = self._random.randint(0, high=self.nwalkers // 2,
+                    js = self._random.integers(0, high=self.nwalkers // 2,
                                               size=self.nwalkers // 2)
                     qs[k, :, :] = psample[k, js, :] + zs[k, :].reshape(
                         (self.nwalkers // 2, 1)) * (pupdate[k, :, :] -
@@ -429,9 +429,9 @@ class Sampler(object):
         mapf = map if self.pool is None else self.pool.map
         results = list(mapf(self._likeprior, ps.reshape((-1, self.dim))))
 
-        logl = np.fromiter((r[0] for r in results), np.float,
+        logl = np.fromiter((r[0] for r in results), float,
                            count=len(results)).reshape((self.ntemps, -1))
-        logp = np.fromiter((r[1] for r in results), np.float,
+        logp = np.fromiter((r[1] for r in results), float,
                            count=len(results)).reshape((self.ntemps, -1))
 
         return logl, logp
