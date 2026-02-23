@@ -26,23 +26,23 @@ def autocorr_function(x, axis=0, fast=False):
 
     """
     x = np.atleast_1d(x)
-    m = [slice(None), ] * len(x.shape)
+    m = [slice(None)] * len(x.shape)
 
     # For computational efficiency, crop the chain to the largest power of
     # two if requested.
     if fast:
         n = int(2**np.floor(np.log2(x.shape[axis])))
         m[axis] = slice(0, n)
-        x = x
+        x = x[tuple(m)]
     else:
         n = x.shape[axis]
 
     # Compute the FFT and then (from that) the auto-correlation function.
     f = np.fft.fft(x-np.mean(x, axis=axis), n=2*n, axis=axis)
     m[axis] = slice(0, n)
-    acf = np.fft.ifft(f * np.conjugate(f), axis=axis)[m].real
+    acf = np.fft.ifft(f * np.conjugate(f), axis=axis)[tuple(m)].real
     m[axis] = 0
-    return acf / acf[m]
+    return acf / acf[tuple(m)]
 
 def autocorr_integrated_time(x, axis=0, window=50, fast=False):
     """
@@ -77,7 +77,7 @@ def autocorr_integrated_time(x, axis=0, window=50, fast=False):
     # N-dimensional case.
     m = [slice(None), ] * len(f.shape)
     m[axis] = slice(1, window)
-    tau = 1 + 2*np.sum(f[m], axis=axis)
+    tau = 1 + 2*np.sum(f[tuple(m)], axis=axis)
 
     return tau
 
